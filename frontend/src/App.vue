@@ -216,13 +216,21 @@ async function toggleFavorite() {
   detailError.value = "";
 
   const query = new URLSearchParams({ newsId: String(detail.value.id) });
+  const method = isCurrentFavorite.value ? "DELETE" : "POST";
   try {
-    const response = await fetch(`/api/favorites/?${query.toString()}`, {
-      method: isCurrentFavorite.value ? "DELETE" : "POST",
-      headers: {
-        Authorization: `Bearer ${authToken.value}`,
+    const response = await fetch(
+      method === "DELETE" ? `/api/favorites/?${query.toString()}` : "/api/favorites/",
+      {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken.value}`,
+        },
+        body: method === "POST"
+          ? JSON.stringify({ newsId: detail.value.id })
+          : undefined,
       },
-    });
+    );
     const result = await readJson(response);
 
     if (!response.ok || result.code !== 200) {
