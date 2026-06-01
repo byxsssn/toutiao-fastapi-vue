@@ -47,3 +47,16 @@ async def delete_favorite(
         message="取消收藏成功",
         data=FavoriteCheck(is_favorite=result),
     )
+
+
+@router.post("/add")
+async def add_favorite_route(
+    data: FavoriteAdd,
+    user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await add_favorite(db, user.id, data.news_id)
+    return success_response(
+        message="收藏成功",
+        data=FavoriteCheck(is_favorite=result),
+    )
